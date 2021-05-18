@@ -60,6 +60,10 @@ app.post('/', (req, res) => {
   }
 })
 
+app.get('/logout', (req, res) => {
+  res.redirect('/')
+})
+
 // 設定 port 3000
 app.listen(3000, () => {
   console.log(`App is running on http://localhost:${port}`)

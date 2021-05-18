@@ -2,12 +2,14 @@
 const express = require('express')
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const port = 3000
 const app = express()
 
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
 app.set('view engine', 'hbs')
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cookieParser('calvin777'))
 
 // user information
 const users = [
@@ -40,7 +42,11 @@ const users = [
 
 // 設定首頁路由
 app.get('/', (req, res) => {
-  res.render('login')
+  if (!req.signedCookies.user) {
+    return res.render('login')
+  } else {
+    return res.render('home', { name: req.signedCookies.user })
+  }
 })
 
 app.post('/', (req, res) => {
@@ -55,12 +61,14 @@ app.post('/', (req, res) => {
       msg = "Wrong password !!"
       return res.render('login', { email: msg })
     } else {
-      return res.render('home', { name: user.firstName })
+      res.cookie('user', user.firstName, { path: '/', signed: true, httpOnly: true })
+      res.render('home', { name: user.firstName })
     }
   }
 })
 
 app.get('/logout', (req, res) => {
+  res.clearCookie('user', { path: '/' })
   res.redirect('/')
 })
 

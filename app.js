@@ -9,9 +9,55 @@ app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
 app.set('view engine', 'hbs')
 app.use(bodyParser.urlencoded({ extended: true }))
 
+// user information
+const users = [
+  {
+    firstName: 'Tony',
+    email: 'tony@stark.com',
+    password: 'iamironman'
+  },
+  {
+    firstName: 'Steve',
+    email: 'captain@hotmail.com',
+    password: 'icandothisallday'
+  },
+  {
+    firstName: 'Peter',
+    email: 'peter@parker.com',
+    password: 'enajyram'
+  },
+  {
+    firstName: 'Natasha',
+    email: 'natasha@gamil.com',
+    password: '*parol#@$!'
+  },
+  {
+    firstName: 'Nick',
+    email: 'nick@shield.com',
+    password: 'password'
+  }
+]
+
 // 設定首頁路由
 app.get('/', (req, res) => {
   res.render('login')
+})
+
+app.post('/', (req, res) => {
+  const { email, password } = req.body
+  let msg = ''
+  const user = users.find(user => user.email === email)
+  if (!user) {
+    msg = "Email didn/'t exsit"
+    return res.render('login', { email: msg })
+  } else {
+    if (user.password !== password) {
+      msg = "Wrong password !!"
+      return res.render('login', { email: msg })
+    } else {
+      return res.render('home', { name: user.firstName })
+    }
+  }
 })
 
 // 設定 port 3000
